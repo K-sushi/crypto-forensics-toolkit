@@ -1,0 +1,12 @@
+# Evidence logs (available on request, not committed)
+evidence/*.jsonl
+
+# Environment
+.env*
+*.pyc
+__pycache__/
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
