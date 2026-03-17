@@ -1,0 +1,81 @@
+name: OSINT Reanalysis Drift CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  osint-reanalysis-drift:
+    runs-on: ubuntu-latest
+    env:
+      BASE_REPORT: "artifacts/osint_runs/batch_reanalysis_report_ci.json"
+      CURRENT_REPORT: "artifacts/osint_runs/batch_reanalysis_report_ci_current.json"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Re-run osint reanalysis batch (smart mode)
+        run: |
+          mkdir -p artifacts/osint_runs
+          DEFAULT_CASE_DIRS=(
+            "--case-dir" "abra_reanalysis_20260318"
+            "--case-dir" "yei_reanalysis_20260318"
+          )
+          CASE_DIR_ARGS=("${DEFAULT_CASE_DIRS[@]}")
+
+          if [ -f "$BASE_REPORT" ]; then
+            mapfile -t BASE_CASE_DIRS < <(
+              python3 - "$BASE_REPORT" - <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = sys.argv[1]
+with open(path, "r", encoding="utf-8") as f:
+    data = json.load(f)
+
+for result in data.get("results", []):
+    case_dir = Path(str(result.get("case_dir", "")).strip()).name
+    if case_dir:
+        print(case_dir)
+PY
+            )
+            if [ ${#BASE_CASE_DIRS[@]} -gt 0 ]; then
+              CASE_DIR_ARGS=()
+              for cd in "${BASE_CASE_DIRS[@]}"; do
+                CASE_DIR_ARGS+=("--case-dir")
+                CASE_DIR_ARGS+=("$cd")
+              done
+            fi
+          fi
+
+          python3 scripts/run_batch_osint_reanalysis.py \
+            --osint-runs-dir artifacts/osint_runs \
+            "${CASE_DIR_ARGS[@]}" \
+            --smart \
+            --out-report "$CURRENT_REPORT"
+
+      - name: Compare against drift baseline and fail on drift
+        run: |
+          BASE_REPORT="artifacts/osint_runs/batch_reanalysis_report_ci.json"
+          CURRENT_REPORT="artifacts/osint_runs/batch_reanalysis_report_ci_current.json"
+          if [ ! -f "$BASE_REPORT" ]; then
+            echo "Base report missing. Seeding baseline from current run for first bootstrap."
+            cp "$CURRENT_REPORT" "$BASE_REPORT"
+          fi
+
+          python3 scripts/compare_reanalysis_reports.py \
+            --base-report "$BASE_REPORT" \
+            --current-report "$CURRENT_REPORT" \
+            --out-report artifacts/osint_runs/reanalysis_drift_report_ci.json \
+            --max-event-delta 0.05 \
+            --max-score-delta 2.0 \
+            --max-signal-delta 1 \
+            --strict-status

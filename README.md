@@ -63,6 +63,24 @@ The `templates/` directory contains a basic data collection script for Etherscan
 
 All API responses are SHA256-hashed and logged in JSONL format with UTC timestamps, API key redaction, response status codes, and result counts.
 
+## Reanalysis Drift Checks
+
+```powershell
+python scripts/compare_reanalysis_reports.py `
+  --base-report artifacts/osint_runs/batch_reanalysis_report_ci.json `
+  --current-report artifacts/osint_runs/batch_reanalysis_report_ci_current.json `
+  --max-event-delta 0.05 `
+  --max-score-delta 2.0 `
+  --max-signal-delta 1 `
+  --strict-status
+```
+
+運用（CI基準更新）:
+
+```powershell
+python scripts/run_batch_osint_reanalysis.py --osint-runs-dir artifacts/osint_runs --case-dir abra_reanalysis_20260318 --case-dir yei_reanalysis_20260318 --smart --out-report artifacts/osint_runs/batch_reanalysis_report_ci_current.json; Copy-Item artifacts/osint_runs/batch_reanalysis_report_ci_current.json artifacts/osint_runs/batch_reanalysis_report_ci.json -Force
+```
+
 ## Methodology
 
 Reports follow a structured multi-phase pipeline:

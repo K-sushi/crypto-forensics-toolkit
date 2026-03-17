@@ -1,0 +1,84 @@
+{
+  "case_count": 2,
+  "status_counts": {
+    "OK": 0,
+    "WARN": 0,
+    "FAIL": 0,
+    "ERROR": 0,
+    "SKIP": 2
+  },
+  "results": [
+    {
+      "case_dir": "C:\\Users\\hkmen\\crypto-forensics-toolkit\\artifacts\\osint_runs\\abra_reanalysis_20260318",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "event_count": 13895,
+      "analysis_score": 45.0,
+      "signals": [
+        {
+          "name": "high_value_tail",
+          "value": 2369347.609792,
+          "evidence": "top 5% threshold=2369347.60979200"
+        },
+        {
+          "name": "round_batch_hits",
+          "value": 1508,
+          "evidence": "integer round multiples observed"
+        },
+        {
+          "name": "burst_windows",
+          "value": 5,
+          "evidence": "windowed event concentration above dynamic threshold"
+        },
+        {
+          "name": "timeline_cv",
+          "value": 10.059904687200973,
+          "evidence": "inter-arrival CV (minutes)"
+        }
+      ],
+      "analysis_status": "ok",
+      "analysis_path": "C:\\Users\\hkmen\\crypto-forensics-toolkit\\artifacts\\osint_runs\\abra_reanalysis_20260318\\analysis.json",
+      "skipped": true,
+      "skipped_reason": "manifest_analysis_uptodate",
+      "signal_count": 4,
+      "status": "SKIP"
+    },
+    {
+      "case_dir": "C:\\Users\\hkmen\\crypto-forensics-toolkit\\artifacts\\osint_runs\\yei_reanalysis_20260318",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "event_count": 11073,
+      "analysis_score": 45.0,
+      "signals": [
+        {
+          "name": "high_value_tail",
+          "value": 55.32632324186458,
+          "evidence": "top 5% threshold=55.32632324"
+        },
+        {
+          "name": "round_batch_hits",
+          "value": 157,
+          "evidence": "integer round multiples observed"
+        },
+        {
+          "name": "burst_windows",
+          "value": 5,
+          "evidence": "windowed event concentration above dynamic threshold"
+        },
+        {
+          "name": "timeline_cv",
+          "value": 12.1980999746533,
+          "evidence": "inter-arrival CV (minutes)"
+        }
+      ],
+      "analysis_status": "ok",
+      "analysis_path": "C:\\Users\\hkmen\\crypto-forensics-toolkit\\artifacts\\osint_runs\\yei_reanalysis_20260318\\analysis.json",
+      "skipped": true,
+      "skipped_reason": "manifest_analysis_uptodate",
+      "signal_count": 4,
+      "status": "SKIP"
+    }
+  ]
+}
