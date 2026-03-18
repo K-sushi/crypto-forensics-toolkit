@@ -30,7 +30,7 @@ def parse_args() -> argparse.Namespace:
         "--max-event-delta",
         type=float,
         default=0.05,
-        help="Allowed relative event count change (0.05=5%).",
+        help="Allowed relative event count change (0.05 = 5 percent).",
     )
     parser.add_argument(
         "--max-score-delta",
