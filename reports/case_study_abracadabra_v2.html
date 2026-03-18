@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case Study: Abracadabra gmETH Exploit ($13M) - v2 Re-analysis</title>
+<style>
+  :root {
+    --bg: #f7f4ef;
+    --paper: #fffdf8;
+    --ink: #1c1a17;
+    --muted: #6e6457;
+    --accent: #9a3412;
+    --line: #e8dece;
+    --code: #f3ede2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: radial-gradient(circle at top, #efe4d3 0%, var(--bg) 45%);
+    color: var(--ink);
+    font: 16px/1.7 Georgia, "Times New Roman", serif;
+  }
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 32px 20px 64px;
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: var(--accent);
+    text-decoration: none;
+    font: 600 13px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .hero {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 32px;
+    box-shadow: 0 12px 40px rgba(63, 40, 16, 0.08);
+  }
+  h1, h2, h3 {
+    font-family: "Segoe UI", Arial, sans-serif;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+  }
+  h1 { font-size: clamp(30px, 5vw, 46px); }
+  h2 { font-size: 28px; margin-top: 12px; }
+  h3 { font-size: 22px; margin-top: 12px; }
+  p { margin: 0 0 16px; }
+  .toc {
+    margin: 28px 0 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  .eyebrow {
+    color: var(--accent);
+    font: 700 12px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 14px;
+  }
+  .toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    columns: 2;
+    column-gap: 24px;
+  }
+  .toc li { margin: 0 0 8px; }
+  .toc a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .toc a:hover { color: var(--accent); }
+  main {
+    margin-top: 28px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 32px;
+    box-shadow: 0 12px 40px rgba(63, 40, 16, 0.08);
+  }
+  section {
+    padding: 20px 0 8px;
+    border-top: 1px solid var(--line);
+  }
+  section:first-child { border-top: 0; padding-top: 0; }
+  ul { padding-left: 20px; margin: 0 0 16px; }
+  code {
+    background: var(--code);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    font: 0.92em ui-monospace, SFMono-Regular, Consolas, monospace;
+  }
+  pre {
+    margin: 0 0 16px;
+    overflow: auto;
+    background: var(--code);
+    padding: 16px;
+    border: 1px solid var(--line);
+  }
+  pre code { background: transparent; padding: 0; }
+  .table-wrap {
+    overflow-x: auto;
+    margin: 0 0 18px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th, td {
+    border-bottom: 1px solid var(--line);
+    padding: 10px 12px;
+    vertical-align: top;
+    text-align: left;
+  }
+  th {
+    color: var(--accent);
+    font: 700 12px/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  a { color: var(--accent); }
+  @media (max-width: 720px) {
+    .toc ul { columns: 1; }
+    .hero, main { padding: 22px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../index.html">&larr; Back to Toolkit</a>
+    <header class="hero">
+      <h1>Case Study: Abracadabra gmETH Exploit ($13M) - v2 Re-analysis</h1>
+      <nav class="toc"><div class="eyebrow">Contents</div><ul><li class="toc-main"><a href="#case-study-abracadabra-gmeth-exploit-13m-v2-re-analysis">Case Study: Abracadabra gmETH Exploit ($13M) - v2 Re-analysis</a></li><li class="toc-sub"><a href="#1-executive-summary">1. Executive Summary</a></li><li class="toc-sub"><a href="#2-re-analysis-execution">2. Re-analysis Execution</a></li><li class="toc-sub"><a href="#3-re-analysis-results">3. Re-analysis Results</a></li><li class="toc-sub"><a href="#4-baseline-comparison">4. Baseline Comparison</a></li><li class="toc-sub"><a href="#5-audit-reproducibility-ledger-execution-trail">5. Audit Reproducibility Ledger (Execution Trail)</a></li></ul></nav>
+    </header>
+    <main>
+      <section id="case-study-abracadabra-gmeth-exploit-13m-v2-re-analysis"><h1>Case Study: Abracadabra gmETH Exploit ($13M) - v2 Re-analysis</h1></section>
+<p><strong>Analysis mode:</strong> automated re-analysis with <code>run_osint_reanalysis.py</code> <strong>Date (UTC):</strong> 2026-03-17 <strong>Scope:</strong> Abracadabra incident only (no modifications to v1 report)</p>
+<p>---</p>
+<section id="1-executive-summary"><h2>1. Executive Summary</h2></section>
+<p>The v2 run re-collects and re-runs OSINT analysis for the same Abracadabra incident using the current pipeline and compares it against the existing baseline case (<code>abra_reanalysis_20260318</code>).</p>
+<ul><li>Outcome: <strong>No behavioral drift detected at the aggregate score/signal level</strong>.</li><li>Core risk signal score remains <code>45.0</code>.</li><li>Event volume remains <code>13,895</code>.</li><li>Core temporal profile remains unchanged (<code>duration_hours=38739.9117</code>, <code>timeline_cv=10.0599</code>).</li></ul>
+<p>---</p>
+<section id="2-re-analysis-execution"><h2>2. Re-analysis Execution</h2></section>
+<div class="table-wrap"><table><thead><tr><th>Item</th><th>Value</th></tr></thead><tbody><tr><td>Source case</td><td><code>reports/case_study_abracadabra_v1.md</code></td></tr><tr><td>Case dir</td><td><code>artifacts/osint_runs/abra_reanalysis_20260318_v5</code></td></tr><tr><td>Manifest</td><td><code>artifacts/osint_runs/abra_reanalysis_20260318_v5/manifest.json</code></td></tr><tr><td>Analysis</td><td><code>artifacts/osint_runs/abra_reanalysis_20260318_v5/analysis.json</code></td></tr><tr><td>Batch report</td><td><code>artifacts/osint_runs/batch_reanalysis_report_abr_v5.json</code></td></tr><tr><td>API key mode</td><td><code>ETHERSCAN_API_KEY</code> provided (external)</td></tr><tr><td>Targets extracted</td><td><code>30</code></td></tr><tr><td>Targets used</td><td><code>30</code></td></tr><tr><td>Targets filtered (unsupported chains)</td><td><code>0</code></td></tr><tr><td>Collected events</td><td><code>13895</code></td></tr><tr><td>Evidence logs</td><td><code>evidence/abra_reanalysis_20260318_v5_api_log.jsonl</code></td></tr><tr><td>Analysis window</td><td><code>2021-10-14T19:24:53Z</code> → <code>2026-03-16T23:19:35Z</code></td></tr></tbody></table></div>
+<p>---</p>
+<section id="3-re-analysis-results"><h2>3. Re-analysis Results</h2></section>
+<section id="31-aggregate-indicators"><h3>3.1 Aggregate indicators</h3></section>
+<div class="table-wrap"><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Score</td><td><code>45.0</code></td></tr><tr><td>Event count</td><td><code>13895</code></td></tr><tr><td>Flows out</td><td><code>4815</code></td></tr><tr><td>Flows in</td><td><code>9080</code></td></tr><tr><td>Out/In ratio</td><td><code>0.5303</code></td></tr><tr><td>Event duration (hours)</td><td><code>38739.9117</code></td></tr></tbody></table></div>
+<section id="32-signals"><h3>3.2 Signals</h3></section>
+<div class="table-wrap"><table><thead><tr><th>Signal</th><th>Value</th><th>Evidence</th></tr></thead><tbody><tr><td><code>high_value_tail</code></td><td><code>2369347.609792</code></td><td>top 5% threshold = 2369347.60979200</td></tr><tr><td><code>round_batch_hits</code></td><td><code>1508</code></td><td>integer round multiples observed</td></tr><tr><td><code>burst_windows</code></td><td><code>5</code></td><td>windowed event concentration above dynamic threshold</td></tr><tr><td><code>timeline_cv</code></td><td><code>10.059904687200973</code></td><td>inter-arrival CV (minutes)</td></tr></tbody></table></div>
+<section id="33-top-activity-prefixes-first-5"><h3>3.3 Top activity prefixes (first 5)</h3></section>
+<div class="table-wrap"><table><thead><tr><th>Prefix</th><th>Count</th></tr></thead><tbody><tr><td><code>IN cook USTC (target_030)</code></td><td><code>3607</code></td></tr><tr><td><code>OUT cook MIM (target_030)</code></td><td><code>2848</code></td></tr><tr><td><code>IN withdraw (target_030)</code></td><td><code>1629</code></td></tr><tr><td><code>IN cook SPELL (target_030)</code></td><td><code>1062</code></td></tr><tr><td><code>IN cook MIM (target_013)</code></td><td><code>158</code></td></tr></tbody></table></div>
+<p>---</p>
+<section id="4-baseline-comparison"><h2>4. Baseline Comparison</h2></section>
+<p>Compared with the existing baseline directory <code>abra_reanalysis_20260318</code>:</p>
+<ul><li><code>score</code>: <code>45.0</code> -&gt; <code>45.0</code> (delta <code>0.0</code>)</li><li><code>event_count</code>: <code>13895</code> -&gt; <code>13895</code> (delta <code>0</code>)</li><li><code>signal count</code>: <code>4</code> -&gt; <code>4</code> (delta <code>0</code>)</li><li><code>timeline_cv</code>: <code>10.059904687200973</code> -&gt; <code>10.059904687200973</code> (delta <code>0</code>)</li><li>Baseline compare artifact: <code>artifacts/osint_runs/reanalysis_drift_report_abr_v5_vs_ci_abr_only.json</code></li></ul>
+<p><strong>Conclusion:</strong> This v2 run is reproducible against current extractor settings.</p>
+<p>---</p>
+<section id="5-audit-reproducibility-ledger-execution-trail"><h2>5. Audit Reproducibility Ledger (Execution Trail)</h2></section>
+<section id="command-set-used-for-this-rerun"><h3>Command set used for this rerun</h3></section>
+<pre><code>$env:ETHERSCAN_API_KEY = &quot;&lt;set this environment variable&gt;&quot;
+python scripts/run_osint_reanalysis.py --report-path reports/case_study_abracadabra_v1.md --case-name abra_reanalysis_20260318_v5 --collect --analyze
+python scripts/run_batch_osint_reanalysis.py --case-dir artifacts/osint_runs/abra_reanalysis_20260318_v5 --out-report artifacts/osint_runs/batch_reanalysis_report_abr_v5.json --smart --force-reprocess
+python scripts/compare_reanalysis_reports.py --base-report artifacts/osint_runs/batch_reanalysis_report_ci_abr_only.json --current-report artifacts/osint_runs/batch_reanalysis_report_abr_v5_norm.json --out-report artifacts/osint_runs/reanalysis_drift_report_abr_v5_vs_ci_abr_only.json</code></pre>
+<section id="immutable-references"><h3>Immutable references</h3></section>
+<div class="table-wrap"><table><thead><tr><th>Artifact</th><th>SHA256</th></tr></thead><tbody><tr><td><code>artifacts/osint_runs/abra_reanalysis_20260318_v5/manifest.json</code></td><td><code>E05DAFA1C0F5E3A88D3A93402BC4C087EFDA621AA2E3F2E1E6C9B82D7D355409</code></td></tr><tr><td><code>artifacts/osint_runs/abra_reanalysis_20260318_v5/analysis.json</code></td><td><code>0324A5B9BF3D91A249C6E46DEFBCA4D7AA081B3982C58BAEA5FE78AA4F70A748</code></td></tr><tr><td><code>artifacts/osint_runs/abra_reanalysis_20260318_v5/collected_events.jsonl</code></td><td><code>006CBAEA308AC0EA39D895F353EBB5511EB163F707C292A3CDA8E57111BF795F</code></td></tr><tr><td><code>evidence/abra_reanalysis_20260318_v5_api_log.jsonl</code></td><td><code>6E85831611438B7803DE95010FC223563D97FEF7DFF64717352E8AEB678780D3</code></td></tr></tbody></table></div>
+<section id="required-verification-check"><h3>Required verification check</h3></section>
+<ul><li>Drift check pass condition: <code>drift_count == 0</code></li><li>Current result: <code>drift_count = 0</code></li></ul>
+    </main>
+  </div>
+</body>
+</html>
