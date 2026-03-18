@@ -261,6 +261,9 @@ def test_reconcile_operational_scores_pushes_partial_axes_up():
 def test_dossier_bonus_uses_typed_live_coverage_as_primary_signal():
     dossier = {
         "coverage_components": {"artifact_ops": 800, "live_intel": 100},
+        "section_coverage": 900,
+        "evidence_chain_coverage": 1000,
+        "reanalysis_linkage_coverage": 800,
         "last_activity_coverage": 900,
         "last_outbound_coverage": 800,
         "address_state_coverage": 700,
@@ -279,3 +282,5 @@ def test_dossier_bonus_uses_typed_live_coverage_as_primary_signal():
     assert bonus["freshness"] >= 130
     assert bonus["fund_flow_closure"] >= 120
     assert bonus["comparative_intelligence"] >= 120
+    assert bonus["provenance"] >= 220
+    assert bonus["cross_case_schema"] >= 240

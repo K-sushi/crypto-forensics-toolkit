@@ -169,6 +169,9 @@ def test_case_dossier_builder_links_snapshot_and_reanalysis(tmp_path):
     assert dossier["operational_artifacts"]["snapshot"]["explorer_hits"] == 1
     assert dossier["dossier_completeness"]["has_linked_reanalysis"] is True
     assert dossier["linked_reanalysis"][0]["has_drift_zero"] is True
+    assert dossier["section_coverage"] >= 1000
+    assert dossier["evidence_chain_coverage"] >= 666
+    assert dossier["reanalysis_linkage_coverage"] >= 600
     assert dossier["last_activity_coverage"] == 500
     assert dossier["last_outbound_coverage"] == 500
     assert dossier["address_state_coverage"] == 0

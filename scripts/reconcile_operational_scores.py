@@ -335,6 +335,9 @@ def dossier_bonus(dossier: Dict[str, Any]) -> Dict[str, int]:
 
     artifact_coverage = int(coverage.get("artifact_ops") or 0)
     live_coverage = int(coverage.get("live_intel") or 0)
+    section_coverage = int(dossier.get("section_coverage") or 0)
+    evidence_chain_coverage = int(dossier.get("evidence_chain_coverage") or 0)
+    reanalysis_linkage_coverage = int(dossier.get("reanalysis_linkage_coverage") or 0)
     last_activity_coverage = int(dossier.get("last_activity_coverage") or 0)
     last_outbound_coverage = int(dossier.get("last_outbound_coverage") or 0)
     address_state_coverage = int(dossier.get("address_state_coverage") or 0)
@@ -342,7 +345,12 @@ def dossier_bonus(dossier: Dict[str, Any]) -> Dict[str, int]:
     if completeness:
         truthy_keys = sum(1 for value in completeness.values() if value)
         completeness_ratio = max(0.6, min(1.0, truthy_keys / max(len(completeness), 1)))
-    artifact_signal = int(artifact_coverage * completeness_ratio)
+    artifact_primary = int(
+        (section_coverage * 0.35)
+        + (evidence_chain_coverage * 0.25)
+        + (reanalysis_linkage_coverage * 0.40)
+    )
+    artifact_signal = int((((artifact_primary * 0.75) + (artifact_coverage * 0.25))) * completeness_ratio)
     live_primary = int(
         (address_state_coverage * 0.40)
         + (last_activity_coverage * 0.35)
