@@ -33,21 +33,21 @@ jobs:
           mkdir -p artifacts/osint_runs
           mapfile -t CASE_DIRS < <(
             python3 - "$BASE_REPORT" <<'PY'
-import json
-import sys
+            import json
+            import sys
 
-path = sys.argv[1]
-with open(path, "r", encoding="utf-8") as f:
-    data = json.load(f)
+            path = sys.argv[1]
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
 
-for result in data.get("results", []):
-    case_dir = str(result.get("case_dir", "")).strip()
-    if not case_dir:
-        continue
-    normalized = case_dir.replace("\\", "/").split("/")[-1]
-    if normalized:
-        print(normalized)
-PY
+            for result in data.get("results", []):
+                case_dir = str(result.get("case_dir", "")).strip()
+                if not case_dir:
+                    continue
+                normalized = case_dir.replace("\\", "/").split("/")[-1]
+                if normalized:
+                    print(normalized)
+            PY
           )
 
           if [ ${#CASE_DIRS[@]} -eq 0 ]; then
