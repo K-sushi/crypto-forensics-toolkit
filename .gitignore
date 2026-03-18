@@ -33,3 +33,6 @@ screenshot_mobile_full.png
 screenshot_mobile_hero.png
 screenshot_mobile_menu.png
 ss_*.png
+reports/README.md
+reports_v3/
+scripts/build_v3_reports.py
