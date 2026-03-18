@@ -31,24 +31,7 @@ jobs:
             exit 1
           fi
           mkdir -p artifacts/osint_runs
-          mapfile -t CASE_DIRS < <(
-            python3 - "$BASE_REPORT" <<'PY'
-            import json
-            import sys
-
-            path = sys.argv[1]
-            with open(path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-
-            for result in data.get("results", []):
-                case_dir = str(result.get("case_dir", "")).strip()
-                if not case_dir:
-                    continue
-                normalized = case_dir.replace("\\", "/").split("/")[-1]
-                if normalized:
-                    print(normalized)
-            PY
-          )
+          mapfile -t CASE_DIRS < <(python3 scripts/extract_case_dirs_from_report.py "$BASE_REPORT")
 
           if [ ${#CASE_DIRS[@]} -eq 0 ]; then
             echo "Base report has no case directories: $BASE_REPORT"
