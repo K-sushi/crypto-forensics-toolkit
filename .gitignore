@@ -6,6 +6,20 @@ evidence/*.jsonl
 *.pyc
 __pycache__/
 node_modules/
+*.log
+
+# Local runtime artifacts
+artifacts/case_dossiers/
+artifacts/current_state_manifest.json
+artifacts/current_state_snapshot.json
+artifacts/feature_summary.json
+artifacts/lead_packets/
+artifacts/osint_runs/
+artifacts/reanalysis_reports/
+artifacts/structure_baseline.json
+artifacts/structured_reports/
+assets/
+drafts/
 
 # OS
 .DS_Store
