@@ -24,3 +24,12 @@ drafts/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local non-source artifacts
+index.html
+screenshot_desktop_full.png
+screenshot_desktop_hero.png
+screenshot_mobile_full.png
+screenshot_mobile_hero.png
+screenshot_mobile_menu.png
+ss_*.png
