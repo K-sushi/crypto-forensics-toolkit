@@ -72,8 +72,9 @@ def normalize_case_dir(case_dir: str) -> str:
     case_dir = str(case_dir).strip()
     if not case_dir:
         return ""
-    normalized = Path(case_dir).name
-    return normalized or case_dir
+    normalized = case_dir.replace("\\", "/").strip("/").strip()
+    normalized = normalized.strip()
+    return Path(normalized).name
 
 
 def percent_delta(base: Optional[float], current: Optional[float]) -> Optional[float]:
