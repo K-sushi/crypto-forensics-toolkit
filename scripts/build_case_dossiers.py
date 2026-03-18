@@ -134,17 +134,28 @@ def build_coverage(payload: Dict[str, Any], snapshot_case: Dict[str, Any], lead_
     )
     live_monitored = int(snapshot_case.get("live_monitored_count") or 0) if snapshot_case else 0
     evidence_chain_len = 1 + sum(1 for item in linked_reanalysis if item.get("source_sha256"))
+    section_coverage = min(1000, int((len(standardized) / 8.0) * 1000))
+    evidence_chain_coverage = min(1000, int((evidence_chain_len / 3.0) * 1000))
+    reanalysis_linkage_score = 0
+    if linked_reanalysis:
+        max_immutable_refs = max(int(item.get("immutable_reference_count") or 0) for item in linked_reanalysis)
+        if any(item.get("has_command_set") for item in linked_reanalysis):
+            reanalysis_linkage_score += 250
+        if any(item.get("has_drift_zero") for item in linked_reanalysis):
+            reanalysis_linkage_score += 250
+        if any(item.get("source_sha256") for item in linked_reanalysis):
+            reanalysis_linkage_score += 200
+        reanalysis_linkage_score += min(300, max_immutable_refs * 75)
+    reanalysis_linkage_coverage = min(1000, reanalysis_linkage_score)
     last_activity_coverage = min(1000, int((last_activity_hits / total_tracked) * 1000))
     last_outbound_coverage = min(1000, int((last_outbound_hits / total_tracked) * 1000))
     address_state_coverage = min(1000, int((address_state_hits / total_tracked) * 1000))
 
     artifact_ops = 0
-    artifact_ops += min(320, len(standardized) * 35)
+    artifact_ops += int(section_coverage * 0.36)
+    artifact_ops += int(evidence_chain_coverage * 0.24)
+    artifact_ops += int(reanalysis_linkage_coverage * 0.26)
     artifact_ops += 140 if html_artifact.get("healthy") else 60 if html_artifact.get("exists") else 0
-    artifact_ops += min(180, evidence_chain_len * 60)
-    artifact_ops += min(220, sum(int(item.get("immutable_reference_count") or 0) for item in linked_reanalysis) * 40)
-    artifact_ops += 120 if any(item.get("has_command_set") for item in linked_reanalysis) else 0
-    artifact_ops += 120 if any(item.get("has_drift_zero") for item in linked_reanalysis) else 0
 
     live_intel = 0
     live_intel += int(address_state_coverage * 0.35)
@@ -187,6 +198,9 @@ def build_coverage(payload: Dict[str, Any], snapshot_case: Dict[str, Any], lead_
     return {
         "coverage_score": sum(components.values()),
         "components": components,
+        "section_coverage": section_coverage,
+        "evidence_chain_coverage": evidence_chain_coverage,
+        "reanalysis_linkage_coverage": reanalysis_linkage_coverage,
         "last_activity_coverage": last_activity_coverage,
         "last_outbound_coverage": last_outbound_coverage,
         "address_state_coverage": address_state_coverage,
@@ -228,6 +242,9 @@ def build_dossier(
         "evidence_chain": evidence_chain,
         "coverage_score": coverage["coverage_score"],
         "coverage_components": coverage["components"],
+        "section_coverage": coverage["section_coverage"],
+        "evidence_chain_coverage": coverage["evidence_chain_coverage"],
+        "reanalysis_linkage_coverage": coverage["reanalysis_linkage_coverage"],
         "last_activity_coverage": coverage["last_activity_coverage"],
         "last_outbound_coverage": coverage["last_outbound_coverage"],
         "address_state_coverage": coverage["address_state_coverage"],
